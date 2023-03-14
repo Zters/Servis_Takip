@@ -13,6 +13,18 @@ def enter_data():
     if(len(company) != 0 and len(store) != 0 and len(service) != 0 and len(responsible) != 0):
         print("basarili")
 
+        filepath = "C:\\Users\\Teknik\\Desktop\\Servis_Takip\\data.xlsx"
+
+        if not os.path.exists(filepath):
+            workbook = openpyxl.Workbook()
+            sheet = workbook.active
+            heading = ["Company", "Store", "service", "responsoble"]
+            sheet.append(heading)
+            workbook.save(filepath)
+        workbook = openpyxl.load_workbook(filepath)
+        sheet = workbook.active
+        sheet.append([company,store,service,responsible])
+        workbook.save(filepath)
     else:
         print("hata")
         tkinter.messagebox.showwarning(title="Error",message="Lutfen gerekli bilgileri doldurunuz")
