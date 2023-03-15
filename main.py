@@ -4,7 +4,30 @@ from tkinter.ttk import *
 
 import os
 import openpyxl
+# kayitli verileri gorme
+def data():
 
+    # guncellenecek buralar
+    window = Tk()
+    window.title("Kayitli Veriler")
+
+    frame = Frame(window)
+    frame.pack()
+
+    service_info_frame = LabelFrame(frame, text="")
+    service_info_frame.grid(row=0, column=0, padx=20, pady=20)
+    company_name_label = Label(service_info_frame, text="Company")
+    company_name_label.grid(row=0, column=0)
+    store_name_label = Label(service_info_frame, text="Store")
+    store_name_label.grid(row=0, column=1)
+
+    company_name_entry = Entry(service_info_frame)
+    store_name_entry = Entry(service_info_frame)
+    company_name_entry.grid(row=1, column=0)
+    store_name_entry.grid(row=1, column=1)
+
+
+# verileri girildigi fonsikiyor
 def enter_data():
     company = company_name_entry.get()
     store = store_name_entry.get()
@@ -18,13 +41,19 @@ def enter_data():
         if not os.path.exists(filepath):
             workbook = openpyxl.Workbook()
             sheet = workbook.active
-            heading = ["Company", "Store", "service", "responsoble"]
+            heading = ["Company", "Store", "Service", "Responsoble"]
             sheet.append(heading)
             workbook.save(filepath)
         workbook = openpyxl.load_workbook(filepath)
         sheet = workbook.active
         sheet.append([company,store,service,responsible])
         workbook.save(filepath)
+        wb = openpyxl.load_workbook(filepath)
+        ws = wb.active
+        print(ws["A1"].value)
+        print(ws["B1"].value)
+        print(ws["C1"].value)
+        print(ws["D1"].value)
     else:
         print("hata")
         tkinter.messagebox.showwarning(title="Error",message="Lutfen gerekli bilgileri doldurunuz")
@@ -86,6 +115,8 @@ registered_label.grid(row=0,column=0)
 registered_check.grid(row=1,column=0)
 
 #button
+button = Button(frame,text="Data" , command=data)
+button.grid(row=2,column=0,sticky="news",padx=20,pady=20)
 button = Button(frame,text="ender data", command=enter_data)
 button.grid(row=3,column=0,sticky="news",padx=20,pady=20)
 
