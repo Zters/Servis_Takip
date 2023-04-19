@@ -1,77 +1,84 @@
 import tkinter.messagebox
 from tkinter import *
 from tkinter.ttk import *
+import pymongo
+from pymongo import *
 
-import os
-import openpyxl
-# kayitli verileri gorme
+uri="MONGOURL"
+myclient = MongoClient(uri,tls=True,tlsAllowInvalidCertificates=True)
+mydb = myclient["SERVIS"]
+mylocal = mydb["DATA"]
+def enter_data():
+    company = company_name_entry.get()
+    store = store_name_entry.get()
+    service = title_combobox.get()
+    responsible = responsible_entry.get()
+    mydata = {"company": company,"store": store, "service": service,"responsible": responsible}
+    x = mylocal.insert_one(mydata)
+    print(x.inserted_id)
 def data():
-
-    # guncellenecek buralar
     window = Tk()
-    window.title("Kayitli Veriler")
+    window.title("SERVIS TAKIP")
 
     frame = Frame(window)
     frame.pack()
 
-    service_info_frame = LabelFrame(frame, text="")
-    service_info_frame.grid(row=0, column=0, padx=20, pady=20)
-    company_name_label = Label(service_info_frame, text="Company")
-    company_name_label.grid(row=0, column=0)
-    store_name_label = Label(service_info_frame, text="Store")
-    store_name_label.grid(row=0, column=1)
+    service_info_frame = LabelFrame(frame, text="Servis Bilgileri")
+    service_info_frame.grid(row=0, column=0,padx=20,pady=20)
+# FOR KULLANILARAK DATALAR CEKILIP DEF DATA GIRILECEK
+    
+    for data in mylocal.find({},{"_id":0}):
+        company_name_label = Label(service_info_frame, text="COMPANY")
+        company_name_label.grid(row=0,column=0)
+        
+        store_name_label = Label(service_info_frame, text="STRORE")
+        store_name_label.grid(row=0,column=1)
+        
+        title_name_label = Label(service_info_frame, text="TITLE")
+        title_name_label.grid(row=0,column=2)
 
-    company_name_entry = Entry(service_info_frame)
-    store_name_entry = Entry(service_info_frame)
-    company_name_entry.grid(row=1, column=0)
-    store_name_entry.grid(row=1, column=1)
+        maid_name_label = Label(service_info_frame, text="MAID")
+        maid_name_label.grid(row=0,column=3)
 
+        responsible_name_label = Label(service_info_frame, text="RESPONSIBLE")
+        responsible_name_label.grid(row=0, column=4)
+        
+# ===========================================================================
 
-# verileri girildigi fonsikiyor
-def enter_data():
-    company = company_name_entry.get()
-    store = store_name_entry.get()
-    service =title_combobox.get()
-    responsible =responsible_entry.get()
-    if(len(company) != 0 and len(store) != 0 and len(service) != 0 and len(responsible) != 0):
-        print("basarili")
+        company_data_label = Label(service_info_frame, text="TEST")
+        company_data_label.grid(row=1, column=0)
 
-        filepath = "C:\\Users\\Teknik\\Desktop\\Servis_Takip\\data.xlsx"
+        store_data_label = Label(service_info_frame, text="TEST")
+        store_data_label.grid(row=1, column=1)
 
-        if not os.path.exists(filepath):
-            workbook = openpyxl.Workbook()
-            sheet = workbook.active
-            heading = ["Company", "Store", "Service", "Responsoble"]
-            sheet.append(heading)
-            workbook.save(filepath)
-        workbook = openpyxl.load_workbook(filepath)
-        sheet = workbook.active
-        sheet.append([company,store,service,responsible])
-        workbook.save(filepath)
-        wb = openpyxl.load_workbook(filepath)
-        ws = wb.active
-        print(ws["A1"].value)
-        print(ws["B1"].value)
-        print(ws["C1"].value)
-        print(ws["D1"].value)
-    else:
-        print("hata")
-        tkinter.messagebox.showwarning(title="Error",message="Lutfen gerekli bilgileri doldurunuz")
+        title_data_label = Label(service_info_frame, text="TEST")
+        title_data_label.grid(row=1, column=2)
 
-    # print("First Name = ",company,"\nLast Name = ",store,"\nDurum = ",service,"\nResponsible",responsible)
+        maid_data_label = Label(service_info_frame, text="TEST")
+        maid_data_label.grid(row=1, column=3)
+
+        responsible_data_label = Label(service_info_frame, text="TEST")
+        responsible_data_label.grid(row=1, column=4)
+
+    
+    for  widget  in service_info_frame.winfo_children():
+        widget.grid_configure(padx=10,pady=5)
+        
+
 window = Tk()
 window.title("SERVIS TAKIP")
 
 frame = Frame(window)
 frame.pack()
 
-service_info_frame = LabelFrame(frame,text="Servis Bilgileri")
-service_info_frame.grid(row= 0 , column=0,padx=20,pady=20)
+service_info_frame = LabelFrame(frame, text="Servis Bilgileri")
+service_info_frame.grid(row=0, column=0,padx=20,pady=20)
 
 company_name_label = Label(service_info_frame, text="Company")
 company_name_label.grid(row=0, column=0)
 store_name_label = Label(service_info_frame, text="Store")
 store_name_label.grid(row=0, column=1)
+
 
 company_name_entry = Entry(service_info_frame)
 store_name_entry = Entry(service_info_frame)
@@ -80,44 +87,32 @@ store_name_entry.grid(row=1, column=1)
 
 
 title_label = Label(service_info_frame, text="Title")
-title_combobox = Combobox(service_info_frame,values=["Onaylandi","Devam Ediyor","Tamamlandi"])
+title_combobox = Combobox(service_info_frame,value=["1","2","3"])
 title_label.grid(row=0,column=2)
 title_combobox.grid(row=1,column=2)
 
 
-# age_label = Label(service_info_frame, text="Age")
-# age_spinbox = Spinbox(service_info_frame)
-# age_label.grid(row=2,column=0)
-# age_spinbox.grid(row=3,column=0)
 responsible_label = Label(service_info_frame, text="Responsible")
-responsible_label.grid(row=2, column=1)
+responsible_label.grid(row=2,column=1)
 
 responsible_entry = Entry(service_info_frame)
 responsible_entry.grid(row=3,column=1)
 
-notionality_label = Label(service_info_frame,text="notionality")
+
+notionality_label = Label(service_info_frame,text="Maid")
 notionality_conbobox = Combobox(service_info_frame, value=["Africa","antartica","asia"])
 notionality_label.grid(row=2,column=0)
 notionality_conbobox.grid(row=3,column=0)
 
 
-for  widget  in service_info_frame.winfo_children():
-    widget.grid_configure(padx=10,pady=5)
+# for  widget  in service_info_frame.winfo_children():
+#     widget.grid_configure(padx=10,pady=5)
 
-#saving course info
-courses_frame = LabelFrame(frame)
-courses_frame.grid(row=1,column=0,sticky="news",padx=20,pady=20)
-
-
-registered_label = Label(courses_frame,text="Registered Status")
-registered_check = Checkbutton(courses_frame,text="Curretly Registered")
-registered_label.grid(row=0,column=0)
-registered_check.grid(row=1,column=0)
 
 #button
-button = Button(frame,text="Data" , command=data)
-button.grid(row=2,column=0,sticky="news",padx=20,pady=20)
-button = Button(frame,text="ender data", command=enter_data)
-button.grid(row=3,column=0,sticky="news",padx=20,pady=20)
+button = Button(frame,text="enter",command=enter_data)
+button.grid(row=2,column=0,sticky="news",padx=2,pady=2)
+button = Button(frame,text="data",command=data)
+button.grid(row=3,column=0,sticky="news",padx=2,pady=2)
 
 window.mainloop()
