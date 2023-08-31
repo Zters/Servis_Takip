@@ -4,7 +4,7 @@ from tkinter.ttk import *
 import pymongo
 from pymongo import *
 
-uri="URL GIRILECEK"
+uri="buraya url yazılacak"
 myclient = MongoClient(uri,tls=True,tlsAllowInvalidCertificates=True)
 mydb = myclient["SERVIS"]
 mylocal = mydb["DATA"]
@@ -12,56 +12,78 @@ def enter_data():
     company = company_name_entry.get()
     store = store_name_entry.get()
     service = title_combobox.get()
-    responsible = responsible_entry.get()
     maid = notionality_conbobox.get()
+    responsible = responsible_entry.get()
     mydata = {"company": company,"store": store, "service": service,"responsible": responsible,"maid":maid}
     x = mylocal.insert_one(mydata)
     print(x.inserted_id)
+
 def data():
     window = Tk()
     window.title("SERVIS TAKIP")
-
+    
     frame = Frame(window)
-    frame.pack()
-
+    frame.pack(fill=BOTH, expand=1)
+    
     service_info_frame = LabelFrame(frame, text="Servis Bilgileri")
-    service_info_frame.grid(row=0, column=0,padx=20,pady=20)
-   
-    company_name_label = Label(service_info_frame, text="COMPANY")
+    service_info_frame.pack()
+    
+    canvas = Canvas(frame)
+    canvas.pack(fill=BOTH, expand=1)
+
+    scrollbar = Scrollbar(canvas, orient=VERTICAL, command=canvas.yview)
+    scrollbar.pack(side=RIGHT, fill=Y)
+
+    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+    another_frame = Frame(canvas)
+    another_frame.pack()
+
+    canvas.create_window((0,0), window=another_frame, anchor=NW)
+
+    company_name_label = Label(another_frame, text="COMPANY")
     company_name_label.grid(row=0,column=0)
     
-    store_name_label = Label(service_info_frame, text="STRORE")
+    store_name_label = Label(another_frame, text="STRORE")
     store_name_label.grid(row=0,column=1)
     
-    title_name_label = Label(service_info_frame, text="TITLE")
+    title_name_label = Label(another_frame, text="TITLE")
     title_name_label.grid(row=0,column=2)
 
-    maid_name_label = Label(service_info_frame, text="MAID")
+    maid_name_label = Label(another_frame, text="MAID")
     maid_name_label.grid(row=0,column=3)
 
-    responsible_name_label = Label(service_info_frame, text="RESPONSIBLE")
+    responsible_name_label = Label(another_frame, text="RESPONSIBLE")
     responsible_name_label.grid(row=0, column=4)
     i = 1
 
+
     for data in mylocal.find({},{"_id":0}):
     
-        company_data_label = Label(service_info_frame, text=data['company'])
+        company_data_label = Label(another_frame, text=data['company'])
         company_data_label.grid(row=i, column=0)
 
-        store_name_label = Label(service_info_frame, text=data['store'])
+        store_name_label = Label(another_frame, text=data['store'])
         store_name_label.grid(row=i,column=1)
         
-        title_name_label = Label(service_info_frame, text=data['service'])
+        title_name_label = Label(another_frame, text=data['service'])
         title_name_label.grid(row=i,column=2)
 
-        maid_name_label = Label(service_info_frame, text=data['maid'])
+        maid_name_label = Label(another_frame, text=data['maid'])
         maid_name_label.grid(row=i,column=3)
 
-        responsible_name_label = Label(service_info_frame, text=data['responsible'])
+        responsible_name_label = Label(another_frame, text=data['responsible'])
         responsible_name_label.grid(row=i, column=4)
+
         i += 1
-    for  widget  in service_info_frame.winfo_children():
+
+    another_frame.update_idletasks()
+    canvas.configure(scrollregion=canvas.bbox("all"))
+
+    for  widget  in another_frame.winfo_children():
         widget.grid_configure(padx=10,pady=5)
+
         
 
 window = Tk()
