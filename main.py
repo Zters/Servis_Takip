@@ -4,7 +4,7 @@ from tkinter.ttk import *
 import pymongo
 from pymongo import *
 
-uri="buraya url yazılacak"
+uri="URL GIRILECEK"
 myclient = MongoClient(uri,tls=True,tlsAllowInvalidCertificates=True)
 mydb = myclient["SERVIS"]
 mylocal = mydb["DATA"]
@@ -77,9 +77,6 @@ def data():
         responsible_name_label.grid(row=i, column=4)
 
         i += 1
-
-    another_frame.update_idletasks()
-    canvas.configure(scrollregion=canvas.bbox("all"))
 
     for  widget  in another_frame.winfo_children():
         widget.grid_configure(padx=10,pady=5)
